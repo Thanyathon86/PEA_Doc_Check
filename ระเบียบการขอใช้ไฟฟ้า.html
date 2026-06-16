@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระเบียบการขอใช้ไฟฟ้า - การไฟฟ้าส่วนภูมิภาค</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===================================================
+           1. ตั้งค่าพื้นฐาน (Desktop First)
+           =================================================== */
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #B39DDB;
+            color: #20003B; 
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #4A148C;
+            border-radius: 15px;
+            border: 4px solid #D4AF37;
+            box-shadow: 0 6px 12px rgba(74, 14, 140, 0.25);
+        }
+
+        h1 {
+            color: #FFD700;
+            margin: 0;
+            font-size: 1.9em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            color: #FFF;
+            margin: 10px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        /* ระบบกล่องสไลด์ขึ้น-ลง */
+        .accordion-item {
+            background-color: #D1C4E9;
+            margin-bottom: 22px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            border: 3px solid #D4AF37;
+            overflow: hidden;
+        }
+
+        .accordion-toggle {
+            display: none;
+        }
+
+        .accordion-header {
+            background-color: #6A1B9A;
+            color: #FFD700;
+            padding: 22px 25px;
+            font-size: 1.25em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .accordion-header::after {
+            content: '▼ กดเพื่อดูเอกสาร';
+            font-size: 0.75em;
+            color: #FFF;
+            background-color: rgba(255, 215, 0, 0.25);
+            padding: 6px 18px;
+            border-radius: 25px;
+            border: 2px solid #FFD700;
+            font-weight: 400;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+
+        .accordion-toggle:checked + .accordion-header::after {
+            content: '▲ ปิดหน้าต่างนี้';
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid #FFF;
+        }
+
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s ease-out;
+            background-color: #EDE7F6;
+        }
+
+        .accordion-toggle:checked ~ .accordion-content {
+            grid-template-rows: 1fr;
+        }
+
+        .accordion-inner {
+            overflow: hidden;
+        }
+
+        .content-box {
+            padding: 25px;
+        }
+
+        .content-box h3 {
+            color: #4A148C;
+            margin-top: 25px;
+            font-size: 1.15em;
+            border-bottom: 3px dashed #D4AF37;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .content-box h3:first-child {
+            margin-top: 0;
+        }
+
+        /* ระบบตัวเลขนำหน้าเอกสาร */
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+            counter-reset: doc-item; 
+        }
+
+        li {
+            background: #FFFFFF;
+            margin-bottom: 15px;
+            padding: 18px 20px;
+            border-radius: 10px;
+            border-left: 8px solid #6A1B9A;
+            font-size: 1.05em;
+            display: flex;
+            align-items: flex-start;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        }
+
+        li::before {
+            counter-increment: doc-item; 
+            content: counter(doc-item) "."; 
+            color: #D4AF37;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-right: 15px;
+            line-height: 1.4;
+            flex-shrink: 0;
+            min-width: 28px; 
+        }
+
+        /* การจัดเรียงข้อความและหมายเหตุให้ขนานกัน */
+        .li-content {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .text-main {
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .note {
+            color: #C62828;
+            font-weight: 600;
+            font-size: 0.95em;
+            display: block;
+        }
+
+        .li-content .note {
+            flex: 1;
+            margin-top: 0;
+            line-height: 1.5; 
+        }
+        
+        span.note {
+            margin-top: 5px;
+        }
+
+        /* ตกแต่งตาราง */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #FFFFFF;
+            min-width: 600px; 
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #D1C4E9;
+            font-size: 1em;
+        }
+
+        th {
+            background-color: #6A1B9A;
+            color: #FFD700;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        td { color: #20003B; }
+        td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) { background-color: #F3E5F5; }
+
+        /* ---------------------------------------------------
+           ส่วนที่เพิ่มใหม่: กล่องติดต่อสอบถามสำหรับผู้สูงอายุ
+           --------------------------------------------------- */
+        .contact-footer-box {
+            background-color: #FFFFFF;
+            border: 4px solid #D4AF37; /* ขอบทองหนาเห็นชัดเจน */
+            border-radius: 15px;
+            padding: 30px 25px;
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(74, 14, 140, 0.2);
+        }
+
+        .contact-text-main {
+            color: #4A148C;
+            font-size: 1.25em;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+
+        .contact-call-button {
+            display: inline-block;
+            background-color: #6A1B9A; /* ปุ่มสีม่วงเข้ม */
+            color: #FFD700; /* ตัวหนังสือสีทองตัวหนาขนาดใหญ่ */
+            font-size: 1.4em;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none; /* เอาเส้นใต้ของลิงก์ออก */
+            margin: 15px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            transition: all 0.2s;
+        }
+
+        .contact-call-button:active {
+            transform: scale(0.96); /* เอฟเฟกต์ยุบตัวเมื่อใช้นิ้วกด */
+            background-color: #4A148C;
+        }
+
+        .contact-text-sub {
+            color: #555555;
+            font-size: 1.0em;
+            margin: 5px 0 0 0;
+            font-weight: 500;
+        }
+
+        /* ===================================================
+           2. RESPONSIVE DESIGN (สำหรับหน้าจอมือถือ)
+           =================================================== */
+        @media screen and (max-width: 600px) {
+            body { padding: 10px; font-size: 18px; }
+            header { padding: 15px 10px; margin-bottom: 20px; border-width: 3px; }
+            h1 { font-size: 1.4em; }
+            h2 { font-size: 1.0em; }
+            .accordion-item { margin-bottom: 15px; border-width: 2px; }
+            .accordion-header { padding: 15px 12px; font-size: 1.05em; }
+            .accordion-header::after { font-size: 0.65em; padding: 4px 10px; margin-left: 10px; }
+            .content-box { padding: 15px 10px; }
+            .content-box h3 { font-size: 1.0em; margin-bottom: 15px; padding-bottom: 8px; }
+            
+            li { padding: 12px 12px; margin-bottom: 10px; border-left-width: 5px; font-size: 0.95em; }
+            li::before { margin-right: 10px; font-size: 1.1em; line-height: 1.4; min-width: 22px; }
+            
+            .li-content { flex-direction: column; gap: 5px; }
+            .li-content .note { margin-top: 2px; }
+            
+            .note { font-size: 0.9em; }
+            th, td { padding: 10px; font-size: 0.9em; }
+
+            /* ปรับแต่งส่วนติดต่อในมือถือ */
+            .contact-footer-box { padding: 20px 15px; margin-top: 30px; }
+            .contact-text-main { font-size: 1.1em; }
+            .contact-call-button { font-size: 1.2em; padding: 12px 0; width: 100%; display: block; }
+            .contact-text-sub { font-size: 0.95em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ระเบียบการขอใช้ไฟฟ้า</h1>
+        <h2>การไฟฟ้าส่วนภูมิภาค</h2>
+    </header>
+
+    <main>
+        <div class="accordion-item">
+            <input type="checkbox" id="acc1" class="accordion-toggle">
+            <label for="acc1" class="accordion-header">1. ขยายเขต</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาโฉนดที่ดิน (ถ่ายหน้า - หลัง), ใบ ภบท.5, ใบ นส.3ก หรือเอกสารสิทธิ์การครอบครองที่ดิน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาหนังสือสัญญาขายที่ดิน - บ้านจากกรมที่ดิน หรือสำเนาสัญญาเช่าที่ดิน</div>
+                                    <div class="note">
+                                        <div><u>กรณีผู้ร่วมถือชื่อในโฉนดที่ดินไม่ใช่ของตนเอง</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของผู้กู้ร่วม</div>
+                                        <div style="margin-top: 8px;"><u>กรณีขอชั่วคราว (เช่าที่ดิน)</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของเจ้าของที่ดิน</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc2" class="accordion-toggle">
+            <label for="acc2" class="accordion-header">2. ขอติดตั้งมิเตอร์ชั่วคราว</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียม (กรณีเจ้าของที่ดิน / บุคคลธรรมดา):</h3>
+                        <ul>
+                            <li><div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชน เจ้าของที่ดิน</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน เจ้าของที่ดิน</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาโฉนดที่ดินเจ้าของที่ดิน (ถ่ายเอกสารหน้า-หลัง) ณ จุดที่จะติดตั้งมิเตอร์ชั่วคราว</div></div></li>
+                            <li><div class="li-content"><div class="text-main">หนังสือยินยอมให้ใช้ไฟในที่ดิน (แบบฟอร์มแนบ)</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนผู้ใช้ไฟ (ผู้เช่า หรือ ผู้ขออนุญาต)</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบันผู้ใช้ไฟ (ผู้เช่า หรือ ผู้ขออนุญาต)</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาสัญญาเช่าที่ดิน (ถ้ามี) พร้อมแนบแผนที่จุดที่จะติดตั้งมิเตอร์ชั่วคราว</div></div></li>
+                        </ul>
+                        <span class="note" style="margin-bottom: 25px;">* ถ้ามีการเปลี่ยนชื่อ-สกุล หรือมีการขีดฆ่าแก้ไขในทะเบียนบ้านให้แนบสำเนาแก้ไขชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส</span>
+
+                        <h3>กรณีนิติบุคคล (เตรียมเอกสารเพิ่ม):</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด (อายุไม่เกิน 3 เดือน)</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20, บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                            <li><div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนกรรมการ</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านกรรมการ</div></div></li>
+                        </ul>
+
+                        <h3>กรณีรับมอบอำนาจ (เตรียมเอกสารเพิ่ม):</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li><div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนผู้รับมอบอำนาจ</div></div></li>
+                            <li><div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านผู้รับมอบอำนาจ</div></div></li>
+                        </ul>
+
+                        <h3>อัตราค่าธรรมเนียมการขอมิเตอร์ชั่วคราว</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ขนาดมิเตอร์</th>
+                                        <th>ค่าธรรมเนียม ค่าประกันการใช้ไฟฟ้า (บาท)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>15 แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>10,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30 แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>20,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15 แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>30,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30 แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>60,000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <span class="note" style="margin-bottom: 25px;">** กรณีเช่าที่ดิน ทาง กฟภ. ขอเรียกเก็บค่าประกันการใช้ไฟฟ้า มิเตอร์ ขนาด 15 แอมป์ 1 เฟส 2 สาย ราคา 30,000 บาท</span>
+
+                        <h3>ตารางขนาดสายเมน เบรคเกอร์และอุปกรณ์ตัดตอน</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="vertical-align: middle;">ขนาดมิเตอร์</th>
+                                        <th colspan="2">ขนาดสายเมน (ตร.มม.)</th>
+                                        <th rowspan="2" style="vertical-align: middle;">ขนาดเบรคเกอร์อุปกรณ์ตัดตอน</th>
+                                    </tr>
+                                    <tr>
+                                        <th>ทองแดง</th>
+                                        <th>อลูมิเนียม</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>5(15) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>10</td>
+                                        <td>16</td>
+                                        <td>ไม่เกิน 16 แอมป์</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15(45) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>16</td>
+                                        <td>-</td>
+                                        <td>45 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30(100) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>35</td>
+                                        <td>-</td>
+                                        <td>100 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15(45) แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>16</td>
+                                        <td>-</td>
+                                        <td>45 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30(100) แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>35</td>
+                                        <td>-</td>
+                                        <td>100 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <span class="note">หมายเหตุ: สายทองแดงต้องร้อยท่อ PVC แยกแต่ละเส้น ส่วนการเดินสายฝังดินให้ใช้สาย NYY เท่านั้น</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc3" class="accordion-toggle">
+            <label for="acc3" class="accordion-header">3. ติดตั้งมิเตอร์ใหม่ (ถาวร)</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาโฉนดที่ดิน (ถ่ายหน้า - หลัง), ใบ ภบท.5, ใบ นส.3ก หรือเอกสารสิทธิ์การครอบครองที่ดิน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาหนังสือสัญญาขายที่ดิน - บ้านจากกรมที่ดิน หรือสำเนาสัญญาเช่าที่ดิน</div>
+                                    <div class="note">
+                                        <div><u>กรณีผู้ร่วมถือชื่อในโฉนดที่ดินไม่ใช่ของตนเอง</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของผู้กู้ร่วม</div>
+                                        <div style="margin-top: 8px;"><u>กรณีขอชั่วคราว (เช่าที่ดิน)</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของเจ้าของที่ดิน</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">Campานังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <h3>อัตราค่าธรรมเนียมการขอติดตั้งมิเตอร์ใหม่</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ขนาดมิเตอร์</th>
+                                        <th>ค่าตรวจสอบการติดตั้งอุปกรณ์</th>
+                                        <th>ภาษี 7%</th>
+                                        <th>รวม (บาท)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>5(15) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>100</td>
+                                        <td>7</td>
+                                        <td>107.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15(45) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>700</td>
+                                        <td>49</td>
+                                        <td>749.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30(100) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>700</td>
+                                        <td>49</td>
+                                        <td>749.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15(45) แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>700</td>
+                                        <td>49</td>
+                                        <td>749.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30(100) แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>1,500</td>
+                                        <td>105</td>
+                                        <td>1,605.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <span class="note" style="margin-bottom: 25px;">หมายเหตุ: หากติดตั้งอุปกรณ์ภายในเกิน 20 จุด หรือใช้ไฟเกิน 5 กิโลวัตต์ จะต้องส่งแผนผังการติดตั้งอุปกรณ์ภายใน มาตราส่วน 1 : 100 จำนวน 2 ชุด หรือขอให้ไฟฟ้าจัดทำก็ได้โดยคิดจุดละ 2 บาท และค่าเขียนผัง 60 บาท</span>
+
+                        <h3>ตารางขนาดสายเมน เบรคเกอร์และอุปกรณ์ตัดตอน</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="vertical-align: middle;">ขนาดมิเตอร์</th>
+                                        <th colspan="2">ขนาดสายเมน (ตร.มม.)</th>
+                                        <th rowspan="2" style="vertical-align: middle;">ขนาดเบรคเกอร์อุปกรณ์ตัดตอน</th>
+                                    </tr>
+                                    <tr>
+                                        <th>ทองแดง</th>
+                                        <th>อลูมิเนียม</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>5(15) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>10</td>
+                                        <td>16</td>
+                                        <td>ไม่เกิน 16 แอมป์</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15(45) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>16</td>
+                                        <td>-</td>
+                                        <td>45 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30(100) แอมป์ 1 เฟส 2 สาย</td>
+                                        <td>35</td>
+                                        <td>-</td>
+                                        <td>100 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15(45) แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>16</td>
+                                        <td>-</td>
+                                        <td>45 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30(100) แอมป์ 3 เฟส 4 สาย</td>
+                                        <td>35</td>
+                                        <td>-</td>
+                                        <td>100 แอมป์ IC มากกว่าหรือเท่ากับ 10 KA</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <span class="note">หมายเหตุ: สายทองแดงต้องร้อยท่อ PVC แยกแต่ละเส้น ส่วนการเดินสายฝังดินให้ใช้สาย NYY เท่านั้น</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc4" class="accordion-toggle">
+            <label for="acc4" class="accordion-header">4. ขอลงนามในหนังสือสัญญาซื้อขายไฟฟ้า</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาโฉนดที่ดิน (ถ่ายหน้า - หลัง), ใบ ภบท.5, ใบ นส.3ก หรือเอกสารสิทธิ์การครอบครองที่ดิน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาหนังสือสัญญาขายที่ดิน - บ้านจากกรมที่ดิน หรือสำเนาสัญญาเช่าที่ดิน</div>
+                                    <div class="note">
+                                        <div><u>กรณีผู้ร่วมถือชื่อในโฉนดที่ดินไม่ใช่ของตนเอง</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของผู้กู้ร่วม</div>
+                                        <div style="margin-top: 8px;"><u>กรณีขอชั่วคราว (เช่าที่ดิน)</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของเจ้าของที่ดิน</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc5" class="accordion-toggle">
+            <label for="acc5" class="accordion-header">5. ขอโอนเปลี่ยนชื่อการใช้ไฟฟ้า (บิลค่าไฟฟ้า)</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาโฉนดที่ดิน (ถ่ายหน้า - หลัง), ใบ ภบท.5, ใบ นส.3ก หรือเอกสารสิทธิ์การครอบครองที่ดิน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาหนังสือสัญญาขายที่ดิน - บ้านจากกรมที่ดิน หรือสำเนาสัญญาเช่าที่ดิน</div>
+                                    <div class="note">
+                                        <div><u>กรณีผู้ร่วมถือชื่อในโฉนดที่ดินไม่ใช่ของตนเอง</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของผู้กู้ร่วม</div>
+                                        <div style="margin-top: 8px;"><u>กรณีขอชั่วคราว (เช่าที่ดิน)</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของเจ้าของที่ดิน</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบแจ้งหนี้ค่าไฟฟ้า หรือ ใบเสร็จค่าไฟฟ้า (บิลเดือนล่าสุด)</div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc6" class="accordion-toggle">
+            <label for="acc6" class="accordion-header">6. ขอต่อกลับมาใช้ไฟใหม่ - ย้าย - เพิ่ม/ลดขนาด</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาโฉนดที่ดิน (ถ่ายหน้า - หลัง), ใบ ภบท.5, ใบ นส.3ก หรือเอกสารสิทธิ์การครอบครองที่ดิน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาหนังสือสัญญาขายที่ดิน - บ้านจากกรมที่ดิน หรือสำเนาสัญญาเช่าที่ดิน</div>
+                                    <div class="note">
+                                        <div><u>กรณีผู้ร่วมถือชื่อในโฉนดที่ดินไม่ใช่ของตนเอง</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของผู้กู้ร่วม</div>
+                                        <div style="margin-top: 8px;"><u>กรณีขอชั่วคราว (เช่าที่ดิน)</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของเจ้าของที่ดิน</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบแจ้งหนี้ค่าไฟฟ้า หรือ ใบเสร็จค่าไฟฟ้า (บิล)</div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc7" class="accordion-toggle">
+            <label for="acc7" class="accordion-header">7. เปลี่ยนประเภทชั่วคราวเป็นถาวร</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาโฉนดที่ดิน (ถ่ายหน้า - หลัง), ใบ ภบท.5, ใบ นส.3ก หรือเอกสารสิทธิ์การครอบครองที่ดิน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาหนังสือสัญญาขายที่ดิน - บ้านจากกรมที่ดิน หรือสำเนาสัญญาเช่าที่ดิน</div>
+                                    <div class="note">
+                                        <div><u>กรณีผู้ร่วมถือชื่อในโฉนดที่ดินไม่ใช่ของตนเอง</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของผู้กู้ร่วม</div>
+                                        <div style="margin-top: 8px;"><u>กรณีขอชั่วคราว (เช่าที่ดิน)</u> หนังสือยินยอมพร้อมสำเนาโฉนดที่ดิน, สำเนาทะเบียนบ้านและสำเนาบัตรประชาชนของเจ้าของที่ดิน</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบแจ้งหนี้ค่าไฟฟ้า หรือ ใบเสร็จค่าไฟฟ้า (บิล)</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบเสร็จค่าประกันการใช้ไฟฟ้าตัวจริง หรือ แบงก์การันตี (ถ้ามี)</div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc8" class="accordion-toggle">
+            <label for="acc8" class="accordion-header">8. ยกเลิกใช้ไฟฟ้า - ปลดฝากมิเตอร์</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบแจ้งหนี้ค่าไฟฟ้า หรือ ใบเสร็จค่าไฟฟ้า (บิล)</div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <input type="checkbox" id="acc9" class="accordion-toggle">
+            <label for="acc9" class="accordion-header">9. ขอรับเงินประกันการใช้ไฟคืน</label>
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <div class="content-box">
+                        <h3>เอกสารที่ต้องเตรียมมารับบริการ:</h3>
+                        <ul>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">สำเนาบัตรประจำตัวประชาชน, ข้าราชการ, พนักงานรัฐวิสาหกิจ, พาสปอร์ต หรือใบต่างด้าว</div>
+                                    <div class="note">(กรณีมีการเปลี่ยนชื่อตัว-สกุล หรือมีรอยขีดฆ่าแก้ไขในทะเบียนบ้าน ให้แนบสำเนาใบเปลี่ยนชื่อ-สกุล, สำเนาใบจดทะเบียนสมรส, ใบหย่าร้าง, สำเนาใบมรณะบัตร หรือสำเนาใบผู้จัดการมรดก)</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านปัจจุบัน</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านที่ขอใช้ไฟ พร้อมแผนที่บ้านที่ขอใช้ไฟ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือมอบอำนาจ (กรณีให้ผู้อื่นมาดำเนินการแทน)</div>
+                                    <div class="note">*พร้อมติดอากรแสตมป์ 10 บาทต่อ 1 เรื่อง</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาบัตรประจำตัวประชาชนของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">สำเนาทะเบียนบ้านของผู้รับมอบอำนาจ</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content">
+                                    <div class="text-main">หนังสือรับรองการจัดตั้งบริษัท, ห้างหุ้นส่วนจำกัด มีอายุไม่เกิน 3 เดือน</div>
+                                    <div class="note">*พร้อมแนบใบ ภพ.20 หรือ บัตรผู้เสียภาษีอากร</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบแจ้งหนี้ค่าไฟฟ้า หรือ ใบเสร็จค่าไฟฟ้า (บิล)</div></div>
+                            </li>
+                            <li>
+                                <div class="li-content"><div class="text-main">ใบเสร็จค่าประกันการใช้ไฟฟ้าตัวจริง หรือ แบงก์การันตี (ถ้ามี)</div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="contact-footer-box">
+        <p class="contact-text-main">หากท่านมีข้อสงสัยเพิ่มเติมเกี่ยวกับเอกสาร</p>
+        <a href="tel:038-350831" class="contact-call-button">📞 กดโทรออก: 038 - 350831</a>
+        <p class="contact-text-sub">แผนกบริการลูกค้า การไฟฟ้าส่วนภูมิภาคบึง</p>
+    </footer>
+</div>
+
+</body>
+</html>
